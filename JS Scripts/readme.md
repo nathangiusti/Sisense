@@ -1,0 +1,1 @@
+This folder contains javascript snippets. Use at your leisure
