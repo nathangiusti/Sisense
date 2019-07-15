@@ -1,0 +1,13 @@
+globals:
+  username: my.email@sisense.com
+  password: my$ecretPassword
+  format:
+    file_type: png
+    query_params:
+      width: 500
+      includeTitle: false
+      includeFilters: false
+      inculdeDs: false
+  folder: C:\Users\Documents\Backups
+dashboards:
+  - 5d0cf36b44f1ed2618f180a6
