@@ -23,18 +23,4 @@ The top of the YAML file defines the global variables that will be used for all 
 
 After the global variables we provide a list of dashboard ids
 
-Example 
-
-globals:
-  username: my.email@sisense.com
-  password: my$ecretPassword
-  format:
-    file_type: png
-    query_params:
-      width: 500
-      includeTitle: false
-      includeFilters: false
-      inculdeDs: false
-  folder: C:\Users\Documents\Backups
-dashboards:
-  - 5d0cf36b44f1ed2618f180a6
+See example_config.yaml
