@@ -45,7 +45,8 @@ def export_png(format_vars, dashboard, headers, file_folder):
     """
     query_string = ''
     for param in format_vars['query_params']:
-        query_string += '{}={}&'.format(param, format_vars['query_params'][param])
+        query_string += '{}={}&'.format(param, str(format_vars['query_params'][param]).lower())
+    query_string = query_string[:-1]
     resp = requests.get('http://localhost:8081/api/v1/dashboards/5d0a3f85108902389c0cbc08/export/png?{}'
                         .format(query_string), headers=headers, stream=True)
     if parse_error_response(resp, "Error exporting dashboard {}".format(dashboard)):
