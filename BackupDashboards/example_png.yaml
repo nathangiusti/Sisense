@@ -1,6 +1,7 @@
-globals:
+authentication:
   username: my.email@sisense.com
-  password: my$ecretPassword
+  password: password
+globals:
   format:
     file_type: png
     query_params:
