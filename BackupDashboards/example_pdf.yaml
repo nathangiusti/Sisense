@@ -10,4 +10,5 @@ globals:
       layout: asis
   folder: C:\Users\Documents\Backups
 dashboards:
-  - 5d0cf36b44f1ed2618f180a6
+  ids:
+    - 5d0cf36b44f1ed2618f180a6

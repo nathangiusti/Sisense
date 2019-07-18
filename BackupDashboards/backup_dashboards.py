@@ -6,7 +6,7 @@ import sys
 
 def authenticate(authentication_params):
     """
-    Authenticates with Sisense a
+    Authenticates with Sisense
 
     :param authentication_params: A dictionary with a username and password entry
     :return: A json blob to be used as a header for sisense calls
@@ -30,7 +30,10 @@ def build_query_string(query_parameters):
     :param query_parameters: a dictionary of query parameters
     :return: The query_parameters dictionary flattened into a string
     """
+
     query_string = ''
+    if not query_parameters:
+        return query_string
     for param in query_parameters:
         if isinstance(query_parameters[param], bool):
             val = str(query_parameters[param]).lower()
@@ -132,6 +135,27 @@ def export_pdf(format_vars, dashboard, headers, file_folder):
         out_file.write(resp.content)
 
 
+def get_dashboards(headers, query_parameters):
+    """
+    Calls for list of dashboards from API
+
+    :param headers: The header of the response file with authorization code
+    :param query_parameters: Query params to pass to api call
+    :return: A list of dashboards ids returned by the API
+    """
+    return_arr = []
+    query_string = build_query_string(query_parameters)
+    resp = requests.get('http://localhost:8081/api/v1/dashboards?{}'
+                        .format(query_string), headers=headers)
+    if not parse_error_response(resp, "Error in getting Dashboard ids from API call"):
+        return
+    resp_json = resp.json()
+    print('Found {} dashboards through API call'.format(len(resp_json)))
+    for dashboard in resp_json:
+        return_arr.append(dashboard['oid'])
+    return return_arr
+
+
 def main():
     if sys.argv[1] is None:
         print("No config file supplied")
@@ -147,7 +171,15 @@ def main():
     format_vars = global_vars['format']
     file_folder = global_vars['folder']
 
-    for dashboard in data_loaded['dashboards']:
+    dashboard_id_list = []
+    if 'query_params' in data_loaded['dashboards']:
+        dashboard_id_list = get_dashboards(headers, data_loaded['dashboards']['query_params'])
+
+    for dashboard in data_loaded['dashboards']['ids']:
+        if dashboard not in dashboard_id_list:
+            dashboard_id_list.append(dashboard)
+
+    for dashboard in dashboard_id_list:
         if format_vars['file_type'] == 'png':
             export_png(format_vars, dashboard, headers, file_folder)
         elif format_vars['file_type'] == 'pdf':

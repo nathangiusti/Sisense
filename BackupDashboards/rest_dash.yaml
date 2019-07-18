@@ -4,7 +4,9 @@ authentication:
 globals:
   format:
     file_type: dash
-    folder: C:\Users\Documents\Backups
+  folder: C:\Users\Documents\Backups
 dashboards:
+  query_params:
+    name: Test
   ids:
     - 5d0cf36b44f1ed2618f180a6
