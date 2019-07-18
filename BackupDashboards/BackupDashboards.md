@@ -10,12 +10,11 @@ If it is in another directory, pass in the full path
 
 python export_dashboards.py "C:\Somefolder\config.yaml"
 
-
 The YAML File
+Authentication:
+The first section of the yaml file contains the username and password that will be used to log in to Sisense
 
-The top of the YAML file defines the global variables that will be used for all dashboards
-- username: The username of the sisense account used for exports
-- password: The password of the sisense account used for exports
+The second section of the YAML file defines the global variables that will be used for all dashboards
 - format: Defines the format and additional parameters for exporting the dashboard
 	- file_type: png, pdf, or dash
 	- query_params: the query parameters to pass into the dashboard, these very by format, see the api documentaion for details
@@ -30,3 +29,4 @@ example_dash.yaml - For exporting to .dash
 rest_dash.yaml - For pulling dashboard ids from the API
 
 Details on the Sisense REST API can be found at https://developers.sisense.com/display/API2/REST+API+Reference+-+v1.0
+
