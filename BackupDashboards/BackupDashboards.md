@@ -21,6 +21,12 @@ The top of the YAML file defines the global variables that will be used for all 
 	- query_params: the query parameters to pass into the dashboard, these very by format, see the api documentaion for details
 - folder: The folder to export the files to. Files will be named based on their dashboard_id and file format. 
 
-After the global variables we provide a list of dashboard ids
+After the global settings, we set up the dashboards to backup. We can do this by explicit listing of ids, by pulling ids from the API or both.
 
-See example_config.yaml
+See example configs
+example_png.yaml - For exporting to YAML
+example_pdf.yaml - For exporting to PDF
+example_dash.yaml - For exporting to .dash
+rest_dash.yaml - For pulling dashboard ids from the API
+
+Details on the Sisense REST API can be found at https://developers.sisense.com/display/API2/REST+API+Reference+-+v1.0
