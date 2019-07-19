@@ -23,7 +23,7 @@ Global variables:
 	- query_params: the query parameters to pass into the dashboard, these very by format, see the api documentation for details
 - folder: The folder to export the files to. Files will be named based on their dashboard_id and file format. 
 
-After the global settings, we set up the dashboards to backup. We can do this by explicit listing of ids, by pulling ids from the API or both.
+After the global settings, we set up the dashboards to backup. We can do this by explicit listing of ids, by pulling ids from the API or both. If you want to pull all the dashboards but with no filtering, create a query_params argument in the yaml, but don't add anything to it. Details for this can be seen rest_dash.yaml
 
 See example configs
 example_png.yaml - For exporting to YAML

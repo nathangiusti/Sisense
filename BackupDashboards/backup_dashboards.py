@@ -86,7 +86,7 @@ def call_export_api(headers, request_string):
     :return: Response if successful, none if not
     """
     print('Calling {}'.format(request_string))
-    resp = requests.get(request_string, headers=headers, stream=True)
+    resp = requests.get(request_string, headers=headers)
     if parse_error_response(resp, "Error exporting dashboard"):
         return resp
     else:
@@ -206,10 +206,12 @@ def main():
     if 'query_params' in data_loaded['dashboards']:
         dashboard_id_list = get_dashboards(host, headers, data_loaded['dashboards']['query_params'])
 
-    for dashboard in data_loaded['dashboards']['ids']:
-        if dashboard not in dashboard_id_list:
-            dashboard_id_list.append(dashboard)
+    if 'ids' in data_loaded['dashboards']:
+        for dashboard in data_loaded['dashboards']['ids']:
+            if dashboard not in dashboard_id_list:
+                dashboard_id_list.append(dashboard)
 
+    print('Backing up {} dashboards'.format(len(dashboard_id_list)))
     for dashboard in dashboard_id_list:
         if format_vars['file_type'] == 'png':
             export_png(host, format_vars, dashboard, headers, file_folder)
@@ -217,6 +219,8 @@ def main():
             export_pdf(host, format_vars, dashboard, headers, file_folder)
         elif format_vars['file_type'] == 'dash':
             export_dash(host, dashboard, headers, file_folder)
+
+    print('Backups complete')
 
 
 main()
