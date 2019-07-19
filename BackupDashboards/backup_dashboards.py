@@ -4,7 +4,7 @@ import yaml
 import sys
 
 
-def authenticate(authentication_params):
+def authenticate(host, authentication_params):
     """
     Authenticates with Sisense
 
@@ -16,10 +16,11 @@ def authenticate(authentication_params):
         exit()
 
     data = {'username': authentication_params['username'], 'password': authentication_params['password']}
-    resp = requests.post('http://localhost:8081/api/v1/authentication/login', data=data)
+    resp = requests.post('{}/api/v1/authentication/login'.format(host), data=data)
     parse_error_response(resp, "Error authenticating", True)
 
     access_code = "Bearer " + resp.json()['access_token']
+    print("Authentication successful")
     return {'authorization': access_code}
 
 
@@ -57,6 +58,7 @@ def parse_error_response(response, error_text, exit_on_error=False):
     """
     if response.status_code != 200:
         print("ERROR: {}: {}".format(error_text, response.status_code))
+        print(response.raw)
         if exit_on_error:
             exit()
         return False
@@ -75,46 +77,67 @@ def build_path(folder, dashboard_id, file_format):
     return "{}\\{}.{}".format(folder, dashboard_id, file_format)
 
 
-def export_dash(dashboard, headers, file_folder):
+def call_export_api(headers, request_string):
+    """
+    Wrapper for making and parsing API export calls
+
+    :param headers: The header with bearer token
+    :param request_string: String of API to call
+    :return: Response if successful, none if not
+    """
+    print('Calling {}'.format(request_string))
+    resp = requests.get(request_string, headers=headers, stream=True)
+    if parse_error_response(resp, "Error exporting dashboard"):
+        return resp
+    else:
+        return None
+
+
+def export_dash(host, dashboard, headers, file_folder):
     """
     Exports dashboard to dash file
 
+    :param host: The host address
     :param dashboard: Dashboard id
     :param headers: Header object with authentication
     :param file_folder: Folder to save dash file to
     :return: Nothing
     """
-    resp = requests.get('http://localhost:8081/api/v1/dashboards/{}/export/dash'
-                        .format(dashboard), headers=headers, stream=True)
-    if parse_error_response(resp, "Error exporting dashboard {}".format(dashboard)):
+    request_string = '{}/api/v1/dashboards/{}/export/dash'.format(host, dashboard)
+    resp = call_export_api(headers, request_string)
+    if resp:
         print("Dashboard {} exported to dash successfully".format(dashboard))
-    with open(build_path(file_folder, dashboard, 'dash'), 'wb') as out_file:
-        out_file.write(resp.content)
+        with open(build_path(file_folder, dashboard, 'dash'), 'wb') as out_file:
+            out_file.write(resp.content)
 
 
-def export_png(format_vars, dashboard, headers, file_folder):
+def export_png(host, format_vars, dashboard, headers, file_folder):
     """
     Exports dashboard to png
 
+    :param host: The host address
     :param format_vars: Dictionary from YAML containing format variables
     :param dashboard: The dashboard id
     :param headers: The header of the response file with authorization code
     :param file_folder: Folder to export dashboard to
     :return: Nothing
     """
-    query_string = build_query_string(format_vars['query_params'])
-    resp = requests.get('http://localhost:8081/api/v1/dashboards/{}/export/png?{}'
-                        .format(dashboard, query_string), headers=headers, stream=True)
-    if parse_error_response(resp, "Error exporting dashboard {}".format(dashboard)):
+    query_string = ''
+    if 'query_params' in format_vars:
+        query_string = build_query_string(format_vars['query_params'])
+    request_string = '{}/api/v1/dashboards/{}/export/png?{}'.format(host, dashboard, query_string)
+    resp = call_export_api(headers, request_string)
+    if resp:
         print("Dashboard {} exported to {} successfully".format(dashboard, format_vars['file_type']))
-    with open(build_path(file_folder, dashboard, format_vars['file_type']), 'wb') as out_file:
-        shutil.copyfileobj(resp.raw, out_file)
+        with open(build_path(file_folder, dashboard, format_vars['file_type']), 'wb') as out_file:
+            shutil.copyfileobj(resp.raw, out_file)
 
 
-def export_pdf(format_vars, dashboard, headers, file_folder):
+def export_pdf(host, format_vars, dashboard, headers, file_folder):
     """
     Exports dashboard to pdf
 
+    :param host: The host address
     :param format_vars: Dictionary from YAML containing format variables
     :param dashboard: The dashboard id
     :param headers: The header of the response file with authorization code
@@ -127,15 +150,15 @@ def export_pdf(format_vars, dashboard, headers, file_folder):
             print('Missing parameter {}. Cannot export dashboard {}'.format())
             return
     query_string = build_query_string(format_vars['query_params'])
-    resp = requests.get('http://localhost:8081/api/v1/dashboards/{}/export/pdf?{}'
-                        .format(dashboard, query_string), headers=headers, stream=True)
-    if parse_error_response(resp, "Error exporting dashboard {}".format(dashboard)):
+    request_string = '{}/api/v1/dashboards/{}/export/pdf?{}'.format(host, dashboard, query_string)
+    resp = call_export_api(headers, request_string)
+    if resp:
         print("Dashboard {} exported to {} successfully".format(dashboard, format_vars['file_type']))
-    with open(build_path(file_folder, dashboard, format_vars['file_type']), 'wb') as out_file:
-        out_file.write(resp.content)
+        with open(build_path(file_folder, dashboard, format_vars['file_type']), 'wb') as out_file:
+            out_file.write(resp.content)
 
 
-def get_dashboards(headers, query_parameters):
+def get_dashboards(host, headers, query_parameters):
     """
     Calls for list of dashboards from API
 
@@ -145,8 +168,8 @@ def get_dashboards(headers, query_parameters):
     """
     return_arr = []
     query_string = build_query_string(query_parameters)
-    resp = requests.get('http://localhost:8081/api/v1/dashboards?{}'
-                        .format(query_string), headers=headers)
+    resp = requests.get('{}/api/v1/dashboards?{}'
+                        .format(host, query_string), headers=headers)
     if not parse_error_response(resp, "Error in getting Dashboard ids from API call"):
         return
     resp_json = resp.json()
@@ -166,14 +189,22 @@ def main():
     with open(config, 'r') as stream:
         data_loaded = yaml.safe_load(stream)
 
-    headers = authenticate(data_loaded['authentication'])
+    host = data_loaded['host']
+    if not host:
+        print('Missing host parameter')
+        exit()
+
+    if host.endswith('/'):
+        host = host[:-1]
+
+    headers = authenticate(host, data_loaded['authentication'])
     global_vars = data_loaded['globals']
     format_vars = global_vars['format']
     file_folder = global_vars['folder']
 
     dashboard_id_list = []
     if 'query_params' in data_loaded['dashboards']:
-        dashboard_id_list = get_dashboards(headers, data_loaded['dashboards']['query_params'])
+        dashboard_id_list = get_dashboards(host, headers, data_loaded['dashboards']['query_params'])
 
     for dashboard in data_loaded['dashboards']['ids']:
         if dashboard not in dashboard_id_list:
@@ -181,11 +212,11 @@ def main():
 
     for dashboard in dashboard_id_list:
         if format_vars['file_type'] == 'png':
-            export_png(format_vars, dashboard, headers, file_folder)
+            export_png(host, format_vars, dashboard, headers, file_folder)
         elif format_vars['file_type'] == 'pdf':
-            export_pdf(format_vars, dashboard, headers, file_folder)
+            export_pdf(host, format_vars, dashboard, headers, file_folder)
         elif format_vars['file_type'] == 'dash':
-            export_dash(dashboard, headers, file_folder)
+            export_dash(host, dashboard, headers, file_folder)
 
 
 main()

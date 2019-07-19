@@ -1,3 +1,4 @@
+host: http://localhost:8081/
 authentication:
   username: my.email@sisense.com
   password: password

@@ -11,13 +11,16 @@ If it is in another directory, pass in the full path
 python export_dashboards.py "C:\Somefolder\config.yaml"
 
 The YAML File
-Authentication:
-The first section of the yaml file contains the username and password that will be used to log in to Sisense
 
-The second section of the YAML file defines the global variables that will be used for all dashboards
+Host: Fill in with the address your Sisense instance is hosted at. You can get this from the url you access Sisense at, copying everything before the /app. For local instances the host would probably be similar to http://localhost:8081
+Authentication:
+
+Authentication: Fill in the username and password to your Sisense. Ensure the account used has access to all the dashboards you are looking to export.
+
+Global variables:
 - format: Defines the format and additional parameters for exporting the dashboard
 	- file_type: png, pdf, or dash
-	- query_params: the query parameters to pass into the dashboard, these very by format, see the api documentaion for details
+	- query_params: the query parameters to pass into the dashboard, these very by format, see the api documentation for details
 - folder: The folder to export the files to. Files will be named based on their dashboard_id and file format. 
 
 After the global settings, we set up the dashboards to backup. We can do this by explicit listing of ids, by pulling ids from the API or both.
