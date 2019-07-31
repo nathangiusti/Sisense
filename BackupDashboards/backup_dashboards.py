@@ -1,5 +1,5 @@
+from PIL import Image
 import requests
-import shutil
 import yaml
 import sys
 
@@ -8,6 +8,7 @@ def authenticate(host, authentication_params):
     """
     Authenticates with Sisense
 
+    :param host: the host address
     :param authentication_params: A dictionary with a username and password entry
     :return: A json blob to be used as a header for sisense calls
     """
@@ -58,7 +59,7 @@ def parse_error_response(response, error_text, exit_on_error=False):
     """
     if response.status_code != 200:
         print("ERROR: {}: {}".format(error_text, response.status_code))
-        print(response.raw)
+        print(response.content)
         if exit_on_error:
             exit()
         return False
@@ -111,7 +112,7 @@ def export_dash(host, dashboard, headers, file_folder):
             out_file.write(resp.content)
 
 
-def export_png(host, format_vars, dashboard, headers, file_folder):
+def export_png(host, format_vars, dashboard, headers, file_folder, cropping):
     """
     Exports dashboard to png
 
@@ -127,10 +128,18 @@ def export_png(host, format_vars, dashboard, headers, file_folder):
         query_string = build_query_string(format_vars['query_params'])
     request_string = '{}/api/v1/dashboards/{}/export/png?{}'.format(host, dashboard, query_string)
     resp = call_export_api(headers, request_string)
+    file_path = build_path(file_folder, dashboard, format_vars['file_type'])
     if resp:
+        with open(file_path, 'wb') as out_file:
+            for chunk in resp:
+                out_file.write(chunk)
         print("Dashboard {} exported to {} successfully".format(dashboard, format_vars['file_type']))
-        with open(build_path(file_folder, dashboard, format_vars['file_type']), 'wb') as out_file:
-            shutil.copyfileobj(resp.raw, out_file)
+        
+    if cropping and dashboard in cropping:
+        image_obj = Image.open(file_path)
+        cropped_image = image_obj.crop((cropping[dashboard]['x1'], cropping[dashboard]['y1'],
+                                        cropping[dashboard]['x2'], cropping[dashboard]['y2']))
+        cropped_image.save(file_path)
 
 
 def export_pdf(host, format_vars, dashboard, headers, file_folder):
@@ -201,6 +210,7 @@ def main():
     global_vars = data_loaded['globals']
     format_vars = global_vars['format']
     file_folder = global_vars['folder']
+    cropping = data_loaded['cropping'] if 'cropping' in data_loaded else None
 
     dashboard_id_list = []
     if 'query_params' in data_loaded['dashboards']:
@@ -214,7 +224,7 @@ def main():
     print('Backing up {} dashboards'.format(len(dashboard_id_list)))
     for dashboard in dashboard_id_list:
         if format_vars['file_type'] == 'png':
-            export_png(host, format_vars, dashboard, headers, file_folder)
+            export_png(host, format_vars, dashboard, headers, file_folder, cropping)
         elif format_vars['file_type'] == 'pdf':
             export_pdf(host, format_vars, dashboard, headers, file_folder)
         elif format_vars['file_type'] == 'dash':
