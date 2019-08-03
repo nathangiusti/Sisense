@@ -33,3 +33,14 @@ rest_dash.yaml - For pulling dashboard ids from the API
 
 Details on the Sisense REST API can be found at https://developers.sisense.com/display/API2/REST+API+Reference+-+v1.0
 
+Troubleshooting:
+
+You may need to install the dependent python libraries. This is done with the following commands:
+pip install requests
+pip install pyyaml
+pip install Pillow
+
+If you find you are getting 500 Internal Server Errors
+- Disable/Update your JAQLine plugin (this is known to cause REST issues)
+- Disable all plugins, if that works, enable them one by one to see which one is causing rest errors
+- Ensure that the account used to authorize has at least viewer access to the dashboard and data permissions for all data in the dashboard
