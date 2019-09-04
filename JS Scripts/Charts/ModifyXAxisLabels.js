@@ -1,4 +1,3 @@
-
 widget.on('render', function(widget,args){
 	widget.queryResult.xAxis = {
 	    categories: widget.queryResult.xAxis.categories,

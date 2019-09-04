@@ -6,7 +6,7 @@ counter = 0
 
 widget.on('domready',(el, args) => {
 	if (counter == 0) {
-		start = $(".table-container .p-dim-member")[start_index].innerText
+		start = $(".table-container .p-dim-member")[start_index].innerText 
 		end = $(".table-container .p-dim-member")[end_index].innerText
 		el.dashboard.filters.update({
 		    "jaql":{
@@ -21,7 +21,7 @@ widget.on('domready',(el, args) => {
 				"table": "DIM_Date",
 				"title": "My Filter"
 		    }
-		},{"save":true, "refresh":true, "unionIfSameDimensionAndSameType":false})
+		},{"save":true, "refresh":true})
 	}
 	counter = 1
 })
