@@ -3,6 +3,9 @@ import requests
 import yaml
 import sys
 
+RETRY = 3
+ERROR_DASHES = []
+
 
 def authenticate(host, authentication_params):
     """
@@ -90,12 +93,31 @@ def call_export_api(headers, request_string):
     :param request_string: String of API to call
     :return: Response if successful, none if not
     """
-    print('Calling {}'.format(request_string))
-    resp = requests.get(request_string, headers=headers)
-    if parse_error_response(resp, "Error exporting dashboard"):
-        return resp
-    else:
-        return None
+    i = 0
+    while i < RETRY:
+        i += 1
+        try:
+            print('Calling {}'.format(request_string))
+            resp = requests.get(request_string, headers=headers)
+        except requests.exceptions.RequestException as err:
+            if i < RETRY:
+                print("Error with request, retyring")
+                continue
+            else:
+                print('Maximum retries exceeded for {}'.format(request_string))
+                print(err)
+                ERROR_DASHES.append(request_string)
+                return None
+
+        if parse_error_response(resp, "Error exporting dashboard"):
+            return resp
+        else:
+            if i < RETRY:
+                print("Error with response, retyring")
+            else:
+                ERROR_DASHES.append(request_string)
+                print('Maximum retries exceeded for {}'.format(request_string))
+                return None
 
 
 def export_dash(host, dashboard, headers, file_folder):
@@ -116,13 +138,16 @@ def export_dash(host, dashboard, headers, file_folder):
             out_file.write(resp.content)
 
 
-def generate_file(host, format_vars, dashboard, headers, file_folder):
+def generate_file(host, format_vars, dashboard, headers, file_folder, widget_id=None, count=0):
     query_string = ''
     if 'query_params' in format_vars:
         query_string = build_query_string(format_vars['query_params'])
-    request_string = '{}/api/v1/dashboards/{}/export/{}?{}'.format(host, dashboard, format_vars['file_type'], query_string)
+    if widget_id:
+        request_string = '{}/api/v1/dashboards/{}/widgets/{}/export/{}?{}'.format(host, dashboard, widget_id, format_vars['file_type'], query_string)
+    else:
+        request_string = '{}/api/v1/dashboards/{}/export/{}?{}'.format(host, dashboard, format_vars['file_type'], query_string)
     resp = call_export_api(headers, request_string)
-    file_path = build_path(file_folder, dashboard, format_vars['file_type'])
+    file_path = build_path(file_folder, dashboard, format_vars['file_type'], count)
     if resp:
         with open(file_path, 'wb') as out_file:
             for chunk in resp:
@@ -134,8 +159,8 @@ def generate_file(host, format_vars, dashboard, headers, file_folder):
 def create_cropping_list(cropping_string):
     coord_list = []
     for coord_str in cropping_string:
-        if len(coord_str.split(',')) != 4:
-            print("Invalid coordinate string {}. Requires 4 integers.".format(cropping_string))
+        if len(coord_str.split(',')) != 5:
+            print("Invalid coordinate string {}. Requires 5 integers.".format(cropping_string))
             continue
         for coord in coord_str.split(','):
             coord_list.append(int(coord))
@@ -154,25 +179,32 @@ def export_png(host, format_vars, dashboard, headers, file_folder, cropping):
     :param cropping: The cropping yaml section
     :return: Nothing
     """
-    if dashboard in cropping:
-        coord_list = create_cropping_list(cropping[dashboard])
+    if cropping and dashboard in cropping:
         i = 0
-        while i < len(coord_list):
-            png_file = generate_file(host, format_vars, dashboard, headers, file_folder)
-            width = format_vars['query_params']['width'] if 'width' in format_vars['query_params'] else 1300
-            image_obj = Image.open(png_file)
-            x1 = coord_list[i]
-            y1 = coord_list[i + 1]
-            x2 = coord_list[i + 2]
-            y2 = coord_list[i + 3]
-            i += 4
-            cropped_image = image_obj.crop((x1, y1, x2, y2))
-            scaling_ratio = width / (x2 - x1)
-            y_coord = scaling_ratio * (y2 - y1)
-            resized_image = cropped_image.resize((width, int(y_coord)))
-            file_path = build_path(file_folder, dashboard, format_vars['file_type'], int(i / 4))
-            print('Cropped image to {} by {}'.format(width, int(y_coord)))
-            resized_image.save(file_path)
+        for coord_str in cropping[dashboard]:
+            i += 1
+            coord_arr = coord_str.split(',')
+            if len(coord_arr) == 5:
+                png_file = generate_file(host, format_vars, dashboard, headers, file_folder)
+                image_obj = Image.open(png_file)
+                x1 = int(coord_arr[0])
+                y1 = int(coord_arr[1])
+                x2 = int(coord_arr[2])
+                y2 = int(coord_arr[3])
+                width = int(coord_arr[4])
+                cropped_image = image_obj.crop((x1, y1, x2, y2))
+                scaling_ratio = width / (x2 - x1)
+                y_coord = scaling_ratio * (y2 - y1)
+                resized_image = cropped_image.resize((width, int(y_coord)))
+                file_path = build_path(file_folder, dashboard, format_vars['file_type'], i)
+                print('Cropped image to {} by {}'.format(width, int(y_coord)))
+                resized_image.save(file_path)
+                print("Image saved to {}".format(file_path))
+            elif len(coord_arr) == 3:
+                width = int(coord_arr[1])
+                height = int(coord_arr[2])
+                widget_format = {'file_type': 'png', 'query_params': {'width': width, 'height': height}}
+                generate_file(host, widget_format, dashboard, headers, file_folder, coord_arr[0], count=i)
     else:
         return generate_file(host, format_vars, dashboard, headers, file_folder)
 
@@ -261,6 +293,10 @@ def main():
             generate_file(host, format_vars, dashboard, headers, file_folder)
 
     print('Backups complete')
+    if len(ERROR_DASHES) > 0:
+        print("Following calls failed:")
+        for dash in ERROR_DASHES:
+            print(dash)
 
 
 main()

@@ -3,7 +3,7 @@ authentication:
   username: my.email@sisense.com
   password: password
 globals:
-  format:
+  format: #These arguments are required for PDFs
     file_type: pdf
     query_params:
       paperFormat: A4

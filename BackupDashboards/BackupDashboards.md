@@ -25,11 +25,14 @@ Global variables:
 
 After the global settings, we set up the dashboards to backup. We can do this by explicit listing of ids, by pulling ids from the API or both. If you want to pull all the dashboards but with no filtering, create a query_params argument in the yaml, but don't add anything to it. Details for this can be seen rest_dash.yaml
 
+You can also download images of just parts of the dashboard. This can be done by either grabbing a specific widget off a dashboard or by cropping the entire dashboard image. 
 See example configs
 example_png.yaml - For exporting to YAML
 example_pdf.yaml - For exporting to PDF
 example_dash.yaml - For exporting to .dash
 rest_dash.yaml - For pulling dashboard ids from the API
+example_crop.yaml - For cropping dashboards (only works for PNG exports)
+
 
 Details on the Sisense REST API can be found at https://developers.sisense.com/display/API2/REST+API+Reference+-+v1.0
 

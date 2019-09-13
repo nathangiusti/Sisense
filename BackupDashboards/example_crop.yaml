@@ -1,0 +1,21 @@
+host: http://localhost:8081/
+authentication:
+  username: my.email@sisense.com
+  password: password
+globals:
+  format:
+    file_type: png
+    query_params:
+      width: 1300
+  folder: C:\Users\Documents\Backups
+dashboards:
+  ids:
+    - 5d44a2e12a666f0474a27e67
+    - 5d434824b1aa523c9065f16e
+cropping: #x1, x2, y1, y2, resizing width OR widget id, width, height
+  5d44a2e12a666f0474a27e67:
+    - 0, 170, 1320, 1130, 650 #Take whole dashboard and crop out a portion from (1,170) and (1320,1130) and resize the image to a width of 650
+    - 5d489ab89899852ac0730f13, 1300, 650
+  5d434824b1aa523c9065f16e:
+    - 5d43485eb1aa523c9065f172, 1300, 650
+    - 5d434864b1aa523c9065f18c, 1300, 650
