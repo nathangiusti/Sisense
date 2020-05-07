@@ -4,8 +4,10 @@
 widget.on('render', function(widget,args){
     widget.queryResult.yAxis[0].stackLabels.formatter =
     function() {
-        valToOmit = 0
-		numCats = 4
+
+        valToOmit = 0 //Set this to 0 to omit top stack, numcats-1 to remove bottom stack
+		numCats = 4 // Number of categories total
+
 		max = 0
 		decimalPlaces = 2
 		for(i = 0; i < numCats; i++) {
@@ -19,13 +21,6 @@ widget.on('render', function(widget,args){
         	retVal = max - (this.points[ valToOmit ][1] - this.points[ valToOmit ][0])
 		else retVal = max
 
-		//Format the numbers
-		if(retVal > 1000000)
-			retVal = '$' + (retVal/1000000).toFixed(decimalPlaces) + 'M'
-		else if (retVal > 1000)
-			retVal = '$' + (retVal/1000).toFixed(decimalPlaces) + 'K'
-		else
-			retVal = '$' + retVal
 		return retVal
     }
 })

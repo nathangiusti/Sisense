@@ -1,3 +1,8 @@
+/*
+This script will help you profile your widget's performance. 
+At each step of the process, the console will print out how long each step took from the time the widget was initialized. 
+Knowing this may help knowing what area's to focus on to improve performance. 
+*/
 
 startTime = 0
 endTime = 0
