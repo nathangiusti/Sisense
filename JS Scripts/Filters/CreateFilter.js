@@ -14,5 +14,5 @@ dashboard.on('initialized',function(d) {
 			'table': 'DIM_Date',
 			'title': 'My filter'
 		}
-	})
+	},{"save":true, "refresh":true}) // Optional. Defaults to false
 })
