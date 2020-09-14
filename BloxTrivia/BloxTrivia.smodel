@@ -1,0 +1,131 @@
+{
+    "title": "BloxTrivia",
+    "type": "extract",
+    "relations": [],
+    "datasets": [
+        {
+            "oid": "faa15503-d580-4bc3-8345-13bff28a3a76",
+            "fullname": "CSV:5e9cd603-0653-4dfa-98f1-3bc9d2a737c9",
+            "type": "extract",
+            "name": "5e9cd603-0653-4dfa-98f1-3bc9d2a737c9",
+            "modelingTransformations": [],
+            "schema": {
+                "tables": [
+                    {
+                        "oid": "b338181c-87ea-4d79-a98b-69424d6d559c",
+                        "id": "02c0ee32-ce43-471c-b73d-197c9a408745.csv",
+                        "name": "blox_trivia.csv",
+                        "type": "base",
+                        "expression": null,
+                        "columns": [
+                            {
+                                "oid": "bdd9033d-4118-4eff-abdc-167713e4dc81",
+                                "id": "Question",
+                                "name": "Question",
+                                "type": 18,
+                                "size": null,
+                                "precision": null,
+                                "scale": null,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            },
+                            {
+                                "oid": "b5feb0f6-89de-46a9-9de0-62395d642eb2",
+                                "id": "A",
+                                "name": "A",
+                                "type": 18,
+                                "size": null,
+                                "precision": null,
+                                "scale": null,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            },
+                            {
+                                "oid": "fcd37828-447d-4e78-a5fd-eab3c005e3d6",
+                                "id": "B",
+                                "name": "B",
+                                "type": 18,
+                                "size": null,
+                                "precision": null,
+                                "scale": null,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            },
+                            {
+                                "oid": "33d7d2a3-ae95-4650-8eed-7c64b1045dde",
+                                "id": "C",
+                                "name": "C",
+                                "type": 18,
+                                "size": null,
+                                "precision": null,
+                                "scale": null,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            },
+                            {
+                                "oid": "6e10812f-42be-48a9-9160-a0c437dc9213",
+                                "id": "D",
+                                "name": "D",
+                                "type": 18,
+                                "size": null,
+                                "precision": null,
+                                "scale": null,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            },
+                            {
+                                "oid": "7a057632-7714-492d-86a5-9cef25fc32ea",
+                                "id": "Answer",
+                                "name": "Answer",
+                                "type": 18,
+                                "size": null,
+                                "precision": null,
+                                "scale": null,
+                                "hidden": false,
+                                "indexed": true,
+                                "description": null
+                            }
+                        ],
+                        "buildBehavior": {
+                            "type": "sync",
+                            "accumulativeConfig": null
+                        },
+                        "tupleTransformations": [],
+                        "hidden": false,
+                        "vTag": "7a52d1b4-8d27-4899-94d4-7bca940b1faf",
+                        "configOptions": {
+                            "delimiter": ",",
+                            "hasHeader": true,
+                            "excludeIfBegins": "",
+                            "excludeIfContains": "",
+                            "stringQuote": "\"",
+                            "ignoreFirstRows": "",
+                            "culture": "en-US"
+                        },
+                        "description": null,
+                        "tags": null
+                    }
+                ]
+            },
+            "connection": {
+                "id": "5f5f8ae8e4083c08d021e525",
+                "provider": "CSV",
+                "parameters": "0uJay0RlWn75SYw5xVdoLTtQMy9XvCUj/Fht19g92ZCMMAsC3GNDN13gh6xsXilGEoWFQyoVvqjx/u3Lx3ehg8//c23+YQvqjevR7NZO1sfH4XGC4ACD9R1VuZXUiMKEunr6TLEXTs0OxojwZ6HcZbxpd0pmwfIzakR7siPBUk+4N8XpgcuP6i47YHiVkywl",
+                "schema": "C:\\ProgramData\\Sisense\\PrismServer\\FileUploads\\storage\\02\\02c0ee32-ce43-471c-b73d-197c9a408745.csv",
+                "fileName": "blox_trivia.csv",
+                "timeout": 300,
+                "autoRefresh": null,
+                "refreshRate": null,
+                "resultLimit": null,
+                "protectedParameters": [],
+                "uiParams": {},
+                "globalTableConfigOptions": {}
+            }
+        }
+    ]
+}
