@@ -44,22 +44,22 @@
                 ],
                 "width": 100,
                 "stretchable": false,
-                "pxlWidth": 0,
+                "pxlWidth": 971,
                 "index": 0
               }
             ]
           }
         ],
-        "pxlWidth": 0,
+        "pxlWidth": 971,
         "index": 0
       }
     ],
     "container": {
-      "sizzle1600097036676": {
+      "sizzle1600100386024": {
         "undefined": {
           "parentNode": [
-            433.3421121718617,
-            39,
+            54.703796550104215,
+            21,
             true
           ]
         }
@@ -196,26 +196,6 @@
           "script": "",
           "title": "",
           "showCarousel": true,
-          "conditions": [
-            {
-              "textEquals": "{panel:Answer}",
-              "backgroundColor": "",
-              "hide": false,
-              "fontSize": "",
-              "fontWeight": "",
-              "color": "Black",
-              "image": ""
-            },
-            {
-              "textEquals": "Select an Answer",
-              "backgroundColor": "",
-              "hide": false,
-              "fontSize": "",
-              "fontWeight": "",
-              "color": "",
-              "image": ""
-            }
-          ],
           "body": [
             {
               "type": "Container",
@@ -476,7 +456,7 @@
         }
       },
       "instanceid": "D5B1D-E020-94",
-      "queryStartTime": "2020-09-14T11:30:30",
+      "queryStartTime": "2020-09-14T12:19:52",
       "drawing": true,
       "widgetTimingLoged": false,
       "continuousDates": false,
