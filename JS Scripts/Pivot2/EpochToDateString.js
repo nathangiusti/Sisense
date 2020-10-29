@@ -1,7 +1,11 @@
 /* Change values to display text */
 widget.transformPivot(
-	{
-		index: [0] //The 0 should be the index of whatever column you have your epoch seconds in 
+		{
+		rows: [
+			{
+				index: [0] // Set this to whatever row index contains your epoch time value
+			}
+		]
 	}, 
 	function(metadata, cellData) {
 
